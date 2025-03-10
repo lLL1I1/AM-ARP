@@ -1,0 +1,106 @@
+[
+  {
+    "knowledge_id": "actor_rules",
+    "knowledge_type": "llamaindex_knowledge",
+    "emb_model_config_name": "my_ollama_embedding_config",
+    "data_processing": [
+      {
+        "load_data": {
+          "loader": {
+            "create_object": true,
+            "module": "llama_index.core",
+            "class": "SimpleDirectoryReader",
+            "init_args": {
+              "input_dir": "../data/use_case_knowledge/actor_rules",
+              "required_exts": [".md"]
+            }
+          }
+        },
+        "transformations": [
+          {
+            "chunk_size": 512,
+            "chunk_overlap": 64
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "knowledge_id": "uc_rules",
+    "knowledge_type": "llamaindex_knowledge",
+    "emb_model_config_name": "my_ollama_embedding_config",
+    "data_processing": [
+      {
+        "load_data": {
+          "loader": {
+            "create_object": true,
+            "module": "llama_index.core",
+            "class": "SimpleDirectoryReader",
+            "init_args": {
+              "input_dir": "../data/use_case_knowledge/uc_rules",
+              "required_exts": [".md"]
+            }
+          }
+        },
+        "transformations": [
+          {
+            "chunk_size": 1024,
+            "chunk_overlap": 128
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "knowledge_id": "uc_rel_rules",
+    "knowledge_type": "llamaindex_knowledge",
+    "emb_model_config_name": "my_ollama_embedding_config",
+    "data_processing": [
+      {
+        "load_data": {
+          "loader": {
+            "create_object": true,
+            "module": "llama_index.core",
+            "class": "SimpleDirectoryReader",
+            "init_args": {
+              "input_dir": "../data/use_case_knowledge/uc_rel_rules",
+              "required_exts": [".md"]
+            }
+          }
+        },
+        "transformations": [
+          {
+            "chunk_size": 256,
+            "chunk_overlap": 32
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "knowledge_id": "uc_change_rules",
+    "knowledge_type": "llamaindex_knowledge",
+    "emb_model_config_name": "my_ollama_embedding_config",
+    "data_processing": [
+      {
+        "load_data": {
+          "loader": {
+            "create_object": true,
+            "module": "llama_index.core",
+            "class": "SimpleDirectoryReader",
+            "init_args": {
+              "input_dir": "../workflow/versions/2025-02-27-1",
+              "required_exts": [".md"]
+            }
+          }
+        },
+        "transformations": [
+          {
+            "chunk_size": 256,
+            "chunk_overlap": 32
+          }
+        ]
+      }
+    ]
+  }
+]

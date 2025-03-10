@@ -1,0 +1,29 @@
+[
+    {
+        "class": "ObjectIdentifier",
+        "args": {
+            "name": "ObjectAgent",
+            "model_config_name": "my_ollama_generate_config",
+            "knowledge_id_list": ["object_rules"],
+            "recent_n_mem_for_retrieve": 3
+        }
+    },
+    {
+        "class": "MessageIdentifier",
+        "args": {
+            "name": "MessageAgent",
+            "model_config_name": "my_ollama_generate_config",
+            "knowledge_id_list": ["message_rules"],
+            "recent_n_mem_for_retrieve": 3
+        }
+    },
+    {
+        "class": "MessageOrderIdentifier",
+        "args": {
+            "name": "OrderAgent",
+            "model_config_name": "my_ollama_generate_config",
+            "knowledge_id_list": ["sequence_rules"],
+            "recent_n_mem_for_retrieve": 3
+        }
+    }
+]
