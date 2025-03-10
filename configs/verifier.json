@@ -1,0 +1,12 @@
+[
+    {
+        "class": "DemandDecomposer",
+        "args": {
+            "name": "Decomposer",
+            "model_config_name": "my_ollama_generate_config",
+            "knowledge_id_list": ["class_rules"],
+            "recent_n_mem_for_retrieve": 2,
+            "sys_prompt": ""
+        }
+    }
+]

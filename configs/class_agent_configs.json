@@ -1,0 +1,42 @@
+[
+    {
+        "class": "ClassIdentifier",
+        "args": {
+            "name": "ClassAgent",
+            "model_config_name": "my_ollama_generate_config",
+            "knowledge_id_list": ["class_rules"],
+            "recent_n_mem_for_retrieve": 2,
+            "sys_prompt": ""
+        }
+    },
+    {
+        "class": "AttributeIdentifier",
+        "args": {
+            "name": "AttrAgent",
+            "model_config_name": "my_ollama_generate_config",
+            "knowledge_id_list": ["attribute_rules"],
+            "recent_n_mem_for_retrieve": 2,
+            "sys_prompt": ""
+        }
+    },
+    {
+        "class": "FunctionIdentifier",
+        "args": {
+            "name": "FuncAgent",
+            "model_config_name": "my_ollama_generate_config",
+            "knowledge_id_list": ["function_rules"],
+            "recent_n_mem_for_retrieve": 1,
+            "sys_prompt": ""
+        }
+    },
+    {
+        "class": "ClassRelationshipIdentifier",
+        "args": {
+            "name": "RelAgent",
+            "model_config_name": "my_ollama_generate_config",
+            "knowledge_id_list": ["class_relationship_rules"],
+            "recent_n_mem_for_retrieve": 1,
+            "sys_prompt": ""
+        }
+    }
+]

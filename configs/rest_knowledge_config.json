@@ -1,0 +1,28 @@
+[
+  {
+    "knowledge_id": "classificaiton_rules",
+    "knowledge_type": "llamaindex_knowledge",
+    "emb_model_config_name": "my_ollama_embedding_config",
+    "data_processing": [
+      {
+        "load_data": {
+          "loader": {
+            "create_object": true,
+            "module": "llama_index.core",
+            "class": "SimpleDirectoryReader",
+            "init_args": {
+              "input_dir": "../data/requirements_classification_knowledge",
+              "required_exts": [".md"]
+            }
+          }
+        },
+        "transformations": [
+          {
+            "chunk_size": 512,
+            "chunk_overlap": 64
+          }
+        ]
+      }
+    ]
+  }
+]
