@@ -8,7 +8,6 @@ from agentscope.message import Msg
 
 
 class AttributeIdentifier(LlamaIndexAgent):
-    """支持知识检索的属性识别智能体"""
 
     def __init__(
             self,
@@ -18,11 +17,11 @@ class AttributeIdentifier(LlamaIndexAgent):
             knowledge_id_list: List[str],
             recent_n_mem_for_retrieve: int = 3,
     ) -> None:
-        sys_prompt = """## 属性识别规则
-            你是一个专业的系统设计师，请根据：
-            1. 已识别的类列表
-            2. 知识库中的属性规范
-            结果必须使用JSON格式：```RESULT\n{"类名":["属性1","属性2"]}```"""
+        sys_prompt = """## Attribute identification rule
+        If you are a professional system designer, please base on:
+        1. List of identified classes
+        2. Attribute specifications in the knowledge base
+        The RESULT must be in JSON format: RESULT\n{" class name ":[" Attribute 1"," attribute 2"]}```"""
 
         super().__init__(
             name=name,
@@ -34,15 +33,14 @@ class AttributeIdentifier(LlamaIndexAgent):
         )
 
     def reply(self, x: Union[Msg, List[Msg]]) -> Msg:
-        """处理输入并生成响应"""
         query = self._extract_query(x)
         related_rules = self._retrieve_knowledge(query)
 
         full_prompt = (
             f"{self.sys_prompt}\n\n"
-            f"[属性规范]\n{related_rules}\n\n"
-            f"[分析对象]\n{query}\n\n"
-            "请列出所有类的属性："
+            f"[attribute specifications]\n{related_rules}\n\n"
+            f"[analytic target]\n{query}\n\n"
+            "list the properties of all classes："
         )
 
         response_text = self.model(full_prompt).text
@@ -60,18 +58,17 @@ class AttributeIdentifier(LlamaIndexAgent):
         for knowledge in self.knowledge_list:
             nodes = knowledge.retrieve(query, self.similarity_top_k)
             for node in nodes:
-                knowledge_str += f"属性规范：{node.text}\n来源：{node.node.metadata}\n\n"
+                knowledge_str += f"attribute specifications：{node.text}\nsource：{node.node.metadata}\n\n"
         return knowledge_str.strip()
 
     def identify_attributes(self, classes: List[str], context: str) -> Dict[str, List[str]]:
-        """对外接口"""
 
-        analysis_input = f"类列表：{', '.join(classes)}\n场景：{context}"
+        analysis_input = f"Class List：{', '.join(classes)}\nscene：{context}"
         response = self.reply(Msg("user", analysis_input, role="assistant"))
         return self._parse_response(response.content)
 
     def _parse_response(self, content: str) -> Dict[str, List[str]]:
-        print('.....................所识别的类的属性：.............................');
+        print('.....................attr:：.............................');
         print(content);
         try:
             if match := re.search(r'```RESULT\n(.*?)\n```', content, re.DOTALL):
@@ -79,13 +76,14 @@ class AttributeIdentifier(LlamaIndexAgent):
         except Exception:
             pass
 
-        # 降级解析
+
         attributes = {}
         current_class = None
         for line in content.split('\n'):
-            if "属性" in line and "：" in line:
+            if "attr" in line and "：" in line:
                 current_class = line.split("：")[0].strip()
                 attributes[current_class] = []
             elif line.strip().startswith("- "):
                 attributes[current_class].append(line.strip()[2:].split(":")[0])
-        return attributes
+        # return attributes
+        return content
