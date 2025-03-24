@@ -62,9 +62,9 @@ class UCRelationshipIdentifier(LlamaIndexAgent):
    
 
         analysis_input = (
-            f"background：{background}\n"
-            f"actor：{', '.join(actors)}\n"
-            f"usecase：{', '.join(use_cases)}"
+            f"background:{background}\n"
+            f"actor:{', '.join(actors)}\n"
+            f"usecase:{', '.join(use_cases)}"
         )
 
         response = self.reply(Msg("user", analysis_input, role="assistant"))
@@ -72,7 +72,7 @@ class UCRelationshipIdentifier(LlamaIndexAgent):
         return self._extract_relationships(response.content)
 
     def _extract_relationships(self, content: str) -> List[str]:
-        print('.....................relationship：.............................');
+        print('.....................relationship:.............................');
         print(content)
 
         if match := re.search(r'```RESULT\n(.*?)\n```', content, re.DOTALL):

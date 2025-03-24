@@ -40,7 +40,7 @@ class ActorIdentifier(LlamaIndexAgent):
             f"{self.sys_prompt}\n\n"
             f"[content of knowledge bank]\n{related_knowledge}\n\n"
             f"[user input:]\n{query}\n\n"
-            "list all actor："
+            "list all actor:"
         )
 
         response_text = self.model(full_prompt).text
@@ -52,7 +52,7 @@ class ActorIdentifier(LlamaIndexAgent):
         return self._extract_actors(response.content)
 
     def _extract_actors(self, content: str) -> List[str]:
-        print('.....................actor：.............................');
+        print('.....................actor:.............................');
         print(content);
         if match := re.search(r'```RESULT\n(.*?)\n```', content, re.DOTALL):
             return [x.strip() for x in match.group(1).split('\n') if x.strip()]
