@@ -7,7 +7,6 @@ from agentscope.message import Msg
 
 
 class DynamicClassIdentifier(LlamaIndexAgent):
-    """支持知识检索的类图变更识别智能体"""
 
     def __init__(
             self,
