@@ -7,7 +7,7 @@ from agentscope.message import Msg
 
 
 class DynamicMessageOrderIdentifier(LlamaIndexAgent):
-    """支持知识检索的消息顺序变更识别智能体"""
+    """Agent supporting knowledge retrieval for message order changes identification"""
 
     MESSAGE_ORDER_PATTERN = r"^(?:\s*(?:alt|loop|opt)\s+.+?\|?\s*)?\w+\s*->\s*\w+\s*:.*$"
 
@@ -19,16 +19,16 @@ class DynamicMessageOrderIdentifier(LlamaIndexAgent):
             knowledge_id_list: List[str],
             recent_n_mem_for_retrieve: int = 3,
     ) -> None:
-        sys_prompt = """## 消息顺序调整规则
-            你是一个专业的系统架构师，请根据变更需求和知识库中的流程逻辑：
-            1. 识别消息顺序需要调整的位置（前置/后置/并行）
-            2. 生成符合业务逻辑的新消息顺序（保持原有消息内容）
-            3. 支持顺序调整类型：
-               - 插入新步骤
-               - 调整步骤顺序
-               - 添加条件分支（使用alt/else）
-               - 创建循环结构（loop）
-            4. 结果必须使用严格格式：```RESULT\n消息流\n...```"""
+        sys_prompt = """## Message Order Adjustment Rules
+            You are a professional system architect. Please adjust the message order based on change requests and the logical flow in the knowledge base:
+            1. Identify positions where message order needs adjustment (before/after/in parallel)
+            2. Generate new message order complying with business logic (keep original message content)
+            3. Support types of order adjustments:
+               - Insert new steps
+               - Adjust step order
+               - Add conditional branches (use alt/else)
+               - Create loop structures (loop)
+            4. The result must use strict format: ```RESULT\nmessage flow\n...```"""
 
         super().__init__(
             name=name,
@@ -40,25 +40,25 @@ class DynamicMessageOrderIdentifier(LlamaIndexAgent):
         )
 
     def reply(self, x: Union[Msg, List[Msg]]) -> Msg:
-        """处理输入并生成顺序调整方案"""
+        """Process input and generate an adjustment plan"""
         full_prompt = (
             f"{self.sys_prompt}\n\n"
-            "请生成符合UML规范的消息顺序列表："
+            "Please generate a message order list that complies with UML standards:"
         )
         return Msg(self.name, self.model(full_prompt).text, role="assistant")
 
     def get_final_message_order(self, original_messages: List[str], change_request: str) -> List[str]:
-        """对外接口：获取调整后的消息顺序"""
+        """Public interface: Get adjusted message order"""
         return self._extract_message_order(
             self.reply(
                 Msg("user",
-                    f"当前消息顺序：\n{chr(10).join(original_messages)}\n变更需求：{change_request}",
+                    f"Current message order:\n{chr(10).join(original_messages)}\nChange request:{change_request}",
                     role="assistant")
             ).content
         )
 
     def _extract_message_order(self, content: str) -> List[str]:
-        """解析带结构化控制的消息顺序"""
+        """Parse structured control messages order"""
         if match := re.search(r'```RESULT\n(.*?)\n```', content, re.DOTALL):
             processed = []
             indent_level = 0
@@ -67,7 +67,7 @@ class DynamicMessageOrderIdentifier(LlamaIndexAgent):
                 if not line:
                     continue
 
-                # 处理结构化控制标签
+                # Handle structured control tags
                 if re.match(r"^\s*(alt|loop|opt)\s+", line):
                     processed.append(line)
                     indent_level += 2
@@ -82,7 +82,7 @@ class DynamicMessageOrderIdentifier(LlamaIndexAgent):
         return []
 
     def validate_message_flow(self, messages: List[str]) -> bool:
-        """验证消息顺序的合理性"""
+        """Validate the rationality of the message order"""
         stack = []
         for idx, line in enumerate(messages):
             if re.match(r"^\s*alt\s+", line):
@@ -93,53 +93,56 @@ class DynamicMessageOrderIdentifier(LlamaIndexAgent):
                 stack.append(("opt", idx))
             elif "end" in line:
                 if not stack:
-                    raise ValueError(f"第{idx + 1}行出现多余的end标签")
+                    raise ValueError(f"Extra end tag at line {idx + 1}")
                 stack.pop()
         return len(stack) == 0
 
 
-# 使用示例
+# Example usage
 if __name__ == "__main__":
     order_identifier = DynamicMessageOrderIdentifier(
-        name="消息顺序识别器",
+        name="Message Order Identifier",
         model_config_name="gpt-4",
         knowledge_id_list=["seq_flow_knowledge"]
     )
 
-    # 示例场景：支付流程优化
+    # Example scenario: Payment process optimization
     original = [
-        "User->PaymentService: 提交支付请求",
-        "PaymentService->BankGateway: 发起支付",
-        "BankGateway-->PaymentService: 返回结果",
-        "PaymentService-->User: 通知结果"
+        "User->PaymentService: Submit payment request",
+        "PaymentService->BankGateway: Initiate payment",
+        "BankGateway-->PaymentService: Return result",
+        "PaymentService-->User: Notify result"
     ]
-    change = "在银行网关返回失败时添加重试机制"
+    change = "Add retry mechanism when Bank Gateway returns failure"
 
     new_order = order_identifier.get_final_message_order(original, change)
     """
-    可能输出：
+    Possible output:
     [
-        "User->PaymentService: 提交支付请求",
-        "alt 支付成功",
-        "  PaymentService->BankGateway: 发起支付",
-        "  BankGateway-->PaymentService: 返回成功",
-        "else 支付失败",
-        "  loop 3次重试",
-        "    PaymentService->BankGateway: 发起支付",
-        "    alt 重试成功",
-        "      BankGateway-->PaymentService: 返回成功",
+        "User->PaymentService: Submit payment request",
+        "alt Payment success",
+        "  PaymentService->BankGateway: Initiate payment",
+        "  BankGateway-->PaymentService: Return success",
+        "else Payment failure",
+        "  loop Retry 3 times",
+        "    PaymentService->BankGateway: Initiate payment",
+        "    alt Retry success",
+        "      BankGateway-->PaymentService: Return success",
         "      break",
-        "    else 继续重试",
-        "      BankGateway-->PaymentService: 返回失败",
+        "    else Continue retry",
+        "      BankGateway-->PaymentService: Return failure",
         "  end",
         "end",
-        "PaymentService-->User: 通知结果"
+        "PaymentService-->User: Notify result"
     ]
     """
 
-    # 验证流程合理性
+    # Validate process rationality
     try:
         if order_identifier.validate_message_flow(new_order):
-            print("消息顺序验证通过")
+            print("Message order validation passed")
     except ValueError as e:
-        print(f"流程错误: {str(e)}")
+        print(f"Process error: {str(e)}")
+    ``` 
+
+This version keeps the structure and functionality of the original code but replaces all the Chinese comments and strings with their English equivalents.

@@ -83,7 +83,7 @@ if __name__ == "__main__":
 
     new_messages = msg_identifier.get_final_messages(original, change)
     """
-    possible output：
+    possible output:
     [
         "User->PaymentService: Submit a payment request ",
         "PaymentService->BankGateway: Initiate payment ",

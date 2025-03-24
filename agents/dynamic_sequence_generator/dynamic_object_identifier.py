@@ -7,7 +7,7 @@ from agentscope.message import Msg
 
 
 class DynamicObjectIdentifier(LlamaIndexAgent):
-    """支持知识检索的顺序图对象变更识别智能体"""
+    """Sequence diagram object change identification agent with knowledge retrieval support"""
 
     def __init__(
             self,
@@ -17,12 +17,12 @@ class DynamicObjectIdentifier(LlamaIndexAgent):
             knowledge_id_list: List[str],
             recent_n_mem_for_retrieve: int = 3,
     ) -> None:
-        sys_prompt = """## 最终对象列表生成规则
-            你是一个专业的系统架构师，请根据变更需求和知识库中的最新顺序图模型：
-            1. 识别变更涉及的对象（新增/重命名/删除）
-            2. 生成变更后的完整对象列表（格式：对象名称:类型）
-            3. 支持的对象类型：Actor、System、Database、Service、Component
-            4. 结果必须使用严格格式：```RESULT\n对象1\n对象2\n...```"""
+        sys_prompt = """## Final Object List Generation Rules
+            You are a professional system architect. Based on the change request and the latest sequence diagram model in the knowledge base:
+            1. Identify objects involved in the changes (addition/rename/deletion)
+            2. Generate a complete list of objects after the change (format: object_name:type)
+            3. Supported object types: Actor, System, Database, Service, Component
+            4. The result must use the strict format: ```RESULT\nobject1\nobject2\n...```"""
 
         super().__init__(
             name=name,
@@ -34,26 +34,26 @@ class DynamicObjectIdentifier(LlamaIndexAgent):
         )
 
     def reply(self, x: Union[Msg, List[Msg]]) -> Msg:
-        """处理输入并生成最终对象列表"""
+        """Process input and generate the final object list"""
         full_prompt = (
             f"{self.sys_prompt}\n\n"
-            "请生成包含类型标注的对象列表："
+            "Please generate a list of objects with type annotations:"
         )
         return Msg(self.name, self.model(full_prompt).text, role="assistant")
 
     def get_final_objects(self, original_objects: List[str], change_request: str) -> List[str]:
-        """对外接口：获取变更后对象列表"""
+        """Public interface: Get the list of objects after changes"""
         combined_objs = list(set(original_objects))
         return self._extract_objects(
             self.reply(
                 Msg("user",
-                    f"参考以下对象生成最新列表:{str(combined_objs)}; 变更需求:{change_request}",
+                    f"Refer to the following objects to generate the latest list:{str(combined_objs)}; Change request:{change_request}",
                     role="assistant")
             ).content
         )
 
     def _extract_objects(self, content: str) -> List[str]:
-        """解析标准化响应并验证对象格式"""
+        """Parse standardized responses and validate object formats"""
         if match := re.search(r'```RESULT\n(.*?)\n```', content, re.DOTALL):
             valid_objects = []
             for item in match.group(1).split('\n'):
@@ -64,19 +64,19 @@ class DynamicObjectIdentifier(LlamaIndexAgent):
         return []
 
 
-# 使用示例
+# Usage example
 if __name__ == "__main__":
     obj_identifier = DynamicObjectIdentifier(
-        name="对象识别器",
+        name="Object Identifier",
         model_config_name="gpt-4",
         knowledge_id_list=["seq_objects_knowledge"]
     )
 
-    # 示例场景：支付系统升级
+    # Example scenario: Payment system upgrade
     original = ["User:Actor", "PaymentService:System"]
-    change = "1. 新增风控服务组件 2. 拆分支付服务为AlipayService和WechatPayService"
+    change = "1. Add Risk Control Service Component 2. Split PaymentService into AlipayService and WechatPayService"
 
     new_objects = obj_identifier.get_final_objects(original, change)
-    # 可能输出：
+    # Possible output:
     # ["User:Actor", "RiskControlService:Component",
     #  "AlipayService:System", "WechatPayService:System"]
