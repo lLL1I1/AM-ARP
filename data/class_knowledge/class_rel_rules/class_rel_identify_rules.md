@@ -1,12 +1,19 @@
-| 关系类型   | 识别特征                                                                 |
-|--------|-------------------------------------------------------------------------|
-| **继承** | 空心三角形箭头 + 实线（子类指向父类）<br>`extends`/`implements` 关键字       |
-| **实现** | 空心三角形箭头 + 虚线（实现类指向接口）<br>`implements` 关键字                 |
-| **关联** | 普通箭头 + 实线（导航方向）<br>代码层面包含对方类的成员变量                          |
-| **聚合** | 空心菱形箭头 + 实线（整体指向部分）<br>`has-a` 语义                               |
-| **组合** | 实心菱形箭头 + 实线（强所属关系）<br>成员对象生命周期与整体一致                        |
-| **依赖** | 普通箭头 + 虚线<br>代码层面存在：方法参数/局部变量/静态调用等临时性使用关系                 |
-| **特殊标记** | 多重性标识（`1..*`/`0..1`）<br>角色名称标注（例：`employer` ↔ `employee`）       |
+Relationship Type	Identification Characteristics
+​Inheritance	Hollow triangle arrow + solid line (subclass points to parent class)
+extends/implements keywords
+​Implementation	Hollow triangle arrow + dashed line (implementing class points to interface)
+implements keyword
+​Association	Regular arrow + solid line (navigation direction)
+Member variable of the other class in code level
+​Aggregation	Hollow diamond arrow + solid line (whole points to part)
+has-a semantics
+​Composition	Solid diamond arrow + solid line (strong ownership)
+Member object lifecycle matches the whole
+​Dependency	Regular arrow + dashed line
+Temporary usage in code level: method parameters/local variables/static calls
+​Special Markers	Multiplicity indicators (1..*/0..1)
+Role name annotations (e.g., employer ↔ employee)
+
 
 # UML Relationship Identification Rules
 
