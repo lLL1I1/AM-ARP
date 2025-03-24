@@ -53,7 +53,7 @@ class MessageOrderIdentifier(LlamaIndexAgent):
         return self._parse_response(response.content)
 
     def _parse_response(self, content: str) -> List[str]:
-        print('.....................results:：.............................');
+        print('.....................results:.............................');
         print(content);
         if match := re.search(r'```RESULT\n(.*?)\n```', content, re.DOTALL):
             return [x.strip() for x in match.group(1).split('\n') if x.strip()]
