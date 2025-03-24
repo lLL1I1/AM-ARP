@@ -34,19 +34,18 @@ class BaseChatAgent(DialogAgent):
             memory_config=memory_config,
         )
 
-        self.context = []  # 额外上下文记录
-
+        self.context = [] 
     def set_context(self, context: list) -> None:
         """Update the context with the given information."""
         self.context = context
 
     def process_input(self, user_input: str) -> str:
         """Process user input and generate a response."""
-        # 记录用户输入
+
         self.context.append({"role": "user", "content": user_input})
-        # 调用父类的回复功能
+
         response = self.reply({"content": user_input})
-        return response['content']  # 返回助手的输出内容
+        return response['content']  
 
     def reflect_on_output(self, output: str) -> None:
         """Reflect on the generated output for further optimization."""
@@ -54,7 +53,7 @@ class BaseChatAgent(DialogAgent):
 
     def reply(self, x: dict = None) -> dict:
         """Override reply method to include context handling."""
-        # 记录输入到内存（如果有内存）
+
         if self.memory:
             self.memory.add(x)
 
@@ -62,17 +61,14 @@ class BaseChatAgent(DialogAgent):
         prompt = self.model.format(
             Msg("system", self.sys_prompt, role="system"),
             self.memory.get_memory() if self.memory else x,
-            *self.context  # 加入上下文
+            *self.context 
         )
 
-        # 调用语言模型并生成响应
         response = self.model(prompt).text
         msg = Msg(self.name, response, role="assistant")
 
-        # 以该智能体的声音打印/说出消息
         self.speak(msg)
 
-        # 记录消息到内存
         if self.memory:
             self.memory.add(msg)
 
