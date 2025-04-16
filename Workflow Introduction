@@ -1,0 +1,7 @@
+The full workflow descriped as blow(The description select use case model as the case):
+  1.Decomposer break out the original requirements, and save the result into the relevant files.
+  2.The use case modeling workflow in the folder named workflow use the processed requirements or
+original requirements to model the requirement. After get the elements of use case model, 
+the workflow will saved them into the specific files.
+  3.Document writer write the specification according to the previous results. 
+  4.Finally, all of the previous files can be used to generate the prototype.
